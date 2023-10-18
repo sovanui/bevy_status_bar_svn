@@ -1,5 +1,5 @@
 [package]
-name = "bevy_stat_bar_svn"
+name = "bevy_status_bar_svn"
 version = "0.1.0"
 edition = "2021"
 

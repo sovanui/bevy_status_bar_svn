@@ -1,3 +1,13 @@
+mod direction;
+mod size;
+mod shaders;
+mod percentage_bar;
+mod percentage;
+mod orientation;
+mod health;
+mod status_bar;
+
+
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
