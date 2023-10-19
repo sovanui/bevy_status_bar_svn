@@ -1,6 +1,5 @@
 use std::marker::PhantomData;
 use bevy::prelude::*;
-use bevy::sprite::MaterialMesh2dBundle;
 use crate::definition::{Orientation, StatusBarDefinition, Direction};
 use crate::material::StatusBarMaterial;
 use crate::percentage::AsPercentage;
@@ -35,11 +34,7 @@ pub struct StatusBarOwner(Entity);
 #[derive(Bundle)]
 pub struct StatusBarBundle {
     material_mesh_bundle: MaterialMeshBundle<StatusBarMaterial>,
-
-
-
-    // TODO CONTINUE HERE
-
+    owner: StatusBarOwner
 }
 
 
@@ -65,47 +60,50 @@ fn spawn<T: PercentageComponent>(
             Direction::Horizontal => { Quat::from_rotation_z((90.0f32).to_radians()) }
         };
 
-        commands.spawn(MaterialMeshBundle {
-            mesh: meshes.add(Mesh::from(shape::Quad::new(
-                Vec2::new(
-                    status_bar_definition.size.width(),
-                    status_bar_definition.size.height()
-                )))),
-            material: status_bar_materials.add(StatusBarMaterial {
-                foreground_color: status_bar_definition.foreground_color,
-                background_color: status_bar_definition.background_color,
-                percent: percentageComponent.percentage().value(),
-            }),
-            transform: Transform::from_translation(status_bar_definition.offset)
-                .with_rotation(orientation_rotation)
-                .with_rotation(direction_rotation),
-            ..default()
-        }).insert(StatusBarOwner(entity));
+        commands.spawn(StatusBarBundle {
+            material_mesh_bundle: MaterialMeshBundle {
+                mesh: meshes.add(Mesh::from(shape::Quad::new(
+                    Vec2::new(
+                        status_bar_definition.size.width(),
+                        status_bar_definition.size.height()
+                    )))),
+                material: status_bar_materials.add(StatusBarMaterial {
+                    foreground_color: status_bar_definition.foreground_color,
+                    background_color: status_bar_definition.background_color,
+                    percent: percentageComponent.percentage().value(),
+                }),
+                transform: Transform::from_translation(status_bar_definition.offset)
+                    .with_rotation(orientation_rotation)
+                    .with_rotation(direction_rotation),
+                ..default()
+            },
+            owner: StatusBarOwner(entity),
+        });
     });
 }
 
 fn update<T: PercentageComponent>(
     mut status_bar_materials: ResMut<Assets<StatusBarMaterial>>,
     mut status_bar_query: Query<(&Handle<StatusBarMaterial>, &StatusBarOwner), Without<StatusBarDefinition>>,
-    parent_query: Query<&T>
+    owner_percentage_component_query: Query<&T>
 ) {
-    material_query.for_each(|(handle, &StatusBarOwner(parent_entity))| {
+    status_bar_query.for_each(|(material_handle, &StatusBarOwner(owner_entity))| {
 
-        if let Some(material) = status_bar_materials.get_mut(handle) {
-            let health = parent_query.get(parent_entity).unwrap();
-            material.percent = health.percentage().value();
-        }
+        let material = status_bar_materials.get_mut(material_handle).expect("StatusBarMaterial missing");
+        let health = owner_percentage_component_query.get(owner_entity).expect("No owner found");
+        material.percent = health.percentage().value();
+
     });
 }
 
 fn follow_owner(
     mut bar_query: Query<(&mut Transform, &StatusBarOwner), Without<StatusBarDefinition>>,
-    parent_query: Query<(&Transform, &StatusBarDefinition)>
+    owner_query: Query<(&Transform, &StatusBarDefinition)>
 ) {
 
-    bar_query.for_each_mut(|(mut transform, &StatusBarOwner(entity))| {
-        let (parent_transform, parent_bar_definition) = parent_query.get(entity).unwrap();
-        let new_translation = parent_transform.translation + parent_bar_definition.offset;
+    bar_query.for_each_mut(|(mut transform, &StatusBarOwner(owner_entity))| {
+        let (owner_transform, owner_bar_definition) = owner_query.get(owner_entity).expect("No owner found");
+        let new_translation = owner_transform.translation + owner_bar_definition.offset;
         transform.translation = new_translation;
     });
 

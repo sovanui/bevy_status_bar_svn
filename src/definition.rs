@@ -1,5 +1,9 @@
 use bevy::prelude::*;
 
+
+pub
+
+
 #[derive(Component)]
 pub struct StatusBarDefinition {
     pub size: Size,
