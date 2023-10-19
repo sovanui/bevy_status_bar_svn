@@ -3,6 +3,45 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use bevy_destination_svn::destination::{Destination, DestinationBundle, DestinationPlugin, RotationSpeed, Speed};
 
+
+#[derive(Component, Copy, Clone)]
+pub struct Health {
+    max: u32,
+    current: u32,
+}
+
+
+impl Health {
+
+    pub fn new(max: u32) -> Self {
+        Health {
+            max,
+            current: max,
+        }
+    }
+
+    pub fn add(&mut self, value: u32) {
+        self.current = u32::min(self.current + value, self.max);
+    }
+
+    pub fn remove(&mut self, value: u32) {
+        self.current = if value > self.current { 0 } else { self.current - value };
+    }
+
+    pub fn get_current(&self) -> u32 {
+        self.current
+    }
+}
+
+
+impl AsPercentage for Health {
+    fn percentage(&self) -> Percentage {
+        Percentage::new(self.current as f32 / self.max as f32)
+    }
+}
+
+
+
 fn main() {
     App::new().
         add_plugins((
@@ -125,6 +164,73 @@ fn update_rotation_speed(
 
         if keyboard_inputs.just_pressed(KeyCode::Left) {
             rotation_speed.0 -= 2.0;
+        }
+    });
+}
+
+
+pub struct PlayerPlugin;
+
+impl Plugin for PlayerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_player_and_player_cam)
+            .add_systems(Update, update_health)
+            .add_plugins(PercentageBarPlugin::<Health>::default());
+        // .add_systems(PostUpdate, camera_follow_player);
+    }
+}
+
+#[derive(Bundle)]
+pub struct PlayerBundle {
+    _player: Player,
+    pbr_bundle: PbrBundle,
+    rigid_body: RigidBody,
+    velocity: Velocity,
+    destination_bundle: DestinationBundle,
+    health: Health,
+    percentage_bar_definition: PercentageBarDefinition,
+}
+
+
+fn spawn_player_and_player_cam(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    let player_transform = Transform::from_xyz(0.0, 0.5, 0.0);
+
+    commands.spawn(PlayerBundle {
+        _player: Player,
+        pbr_bundle: PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: player_transform,
+            ..default()
+        },
+        rigid_body: RigidBody::KinematicVelocityBased,
+        velocity: Velocity::zero(),
+        destination_bundle: DestinationBundle {
+            destination: Destination::Reached,
+            speed: Default::default(),
+            rotation_speed: Default::default(),
+        },
+        health: Health::new(100),
+        percentage_bar_definition: PercentageBarDefinition::default(),
+    });
+
+    commands.spawn(Camera3dBundle {
+        transform: Transform::from_xyz(0.0, PLAYER_CAMERA_Y_OFFSET, PLAYER_CAMERA_Z_OFFSET)
+            .looking_at(player_transform.translation, Vec3::Y),
+        ..default()
+    });
+}
+
+
+fn update_health(mut health: Query<&mut Health, With<Player>>) {
+    health.for_each_mut(|mut health| {
+        health.add(1);
+        if health.get_current() == 100 {
+            health.remove(100);
         }
     });
 }
