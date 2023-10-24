@@ -20,9 +20,9 @@ impl <T: PercentageComponent> Default for StatusBarPlugin<T> {
 
 impl <T: PercentageComponent> Plugin for StatusBarPlugin<T> {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostStartup, spawn)
-            .add_systems(PostUpdate, follow_owner)
+        app.add_systems(PostStartup, spawn::<T>)
             .add_systems(Update, update::<T>)
+            .add_systems(PostUpdate, follow_owner)
             .add_plugins(MaterialPlugin::<StatusBarMaterial>::default());
     }
 }

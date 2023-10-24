@@ -1,18 +1,20 @@
+use std::marker::{PhantomData};
 use bevy::prelude::*;
-
+use crate::plugin::PercentageComponent;
 
 
 #[derive(Component)]
-pub struct StatusBarDefinition {
+pub struct StatusBarDefinition<T: PercentageComponent> {
     pub size: Size,
     pub offset: Vec3,
     pub orientation: Orientation,
     pub direction: Direction,
     pub foreground_color: Color,
     pub background_color: Color,
+    pub phantom_data: PhantomData<T>
 }
 
-impl Default for StatusBarDefinition {
+impl<T: PercentageComponent> Default for StatusBarDefinition<T> {
     fn default() -> Self {
         Self {
             size: Size::new(1.2, 0.20),
@@ -21,6 +23,7 @@ impl Default for StatusBarDefinition {
             direction: Direction::Horizontal,
             foreground_color: Color::GREEN,
             background_color: Color::RED,
+            phantom_data: PhantomData
         }
     }
 }
