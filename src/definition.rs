@@ -1,7 +1,7 @@
-use std::marker::{PhantomData};
-use bevy::prelude::*;
-use crate::plugin::PercentageComponent;
+use std::marker::PhantomData;
 
+use crate::plugin::PercentageComponent;
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct StatusBarDefinition<T: PercentageComponent> {
@@ -11,7 +11,7 @@ pub struct StatusBarDefinition<T: PercentageComponent> {
     pub direction: Direction,
     pub foreground_color: Color,
     pub background_color: Color,
-    pub phantom_data: PhantomData<T>
+    pub phantom_data: PhantomData<T>,
 }
 
 impl<T: PercentageComponent> Default for StatusBarDefinition<T> {
@@ -23,22 +23,22 @@ impl<T: PercentageComponent> Default for StatusBarDefinition<T> {
             direction: Direction::Horizontal,
             foreground_color: Color::GREEN,
             background_color: Color::RED,
-            phantom_data: PhantomData
+            phantom_data: PhantomData,
         }
     }
 }
 
-
+#[derive(Default)]
 pub struct Size {
     width: f32,
-    height: f32
+    height: f32,
 }
 
 impl Size {
     pub fn new(width: f32, height: f32) -> Self {
         Size {
             width: f32::max(width, 0.0),
-            height: f32::max(height, 0.0)
+            height: f32::max(height, 0.0),
         }
     }
 
@@ -50,13 +50,17 @@ impl Size {
     }
 }
 
+#[derive(Default)]
 pub enum Orientation {
+    #[default]
     FacingCamera,
     // Static(Quat),
     // Inherit
 }
 
+#[derive(Default)]
 pub enum Direction {
+    #[default]
     Horizontal,
     // Vertical
 }
