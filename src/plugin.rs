@@ -49,7 +49,8 @@ fn spawn<T: PercentageComponent>(
         };
 
         let direction_rotation = match status_bar_definition.direction {
-            Direction::Horizontal => Quat::from_rotation_z((90.0f32).to_radians()),
+            Direction::Horizontal => Quat::default(),
+            Direction::Vertical => Quat::from_rotation_z((90.0f32).to_radians()),
         };
 
         commands.spawn(StatusBarBundle {
@@ -64,8 +65,7 @@ fn spawn<T: PercentageComponent>(
                     percent: percentage_component.percentage().value(),
                 }),
                 transform: Transform::from_translation(status_bar_definition.offset)
-                    .with_rotation(orientation_rotation)
-                    .with_rotation(direction_rotation),
+                    .with_rotation(orientation_rotation * direction_rotation),
                 ..default()
             },
             owner: StatusBarOwner(entity),

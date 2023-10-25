@@ -20,7 +20,7 @@ impl<T: PercentageComponent> Default for StatusBarDefinition<T> {
             size: Size::new(1.2, 0.20),
             offset: Vec3::new(0.0, 0.9, -0.7),
             orientation: Orientation::FacingCamera,
-            direction: Direction::Horizontal,
+            direction: Direction::Vertical,
             foreground_color: Color::GREEN,
             background_color: Color::RED,
             phantom_data: PhantomData,
@@ -62,5 +62,5 @@ pub enum Orientation {
 pub enum Direction {
     #[default]
     Horizontal,
-    // Vertical
+    Vertical
 }
