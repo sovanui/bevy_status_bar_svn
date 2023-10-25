@@ -20,7 +20,7 @@ impl<T: PercentageComponent> Default for StatusBarDefinition<T> {
             size: Size::new(1.2, 0.20),
             offset: Vec3::new(0.0, 0.9, -0.7),
             orientation: Orientation::FacingCamera,
-            direction: Direction::Vertical,
+            direction: Direction::Horizontal,
             foreground_color: Color::GREEN,
             background_color: Color::RED,
             phantom_data: PhantomData,
