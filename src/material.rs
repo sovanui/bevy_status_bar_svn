@@ -1,9 +1,9 @@
+use bevy::asset::Asset;
 use bevy::prelude::{Color, Material};
-use bevy::reflect::{TypePath, TypeUuid};
+use bevy::reflect::{TypePath};
 use bevy::render::render_resource::{AsBindGroup, ShaderRef};
 
-#[derive(AsBindGroup, TypeUuid, TypePath, Debug, Clone)]
-#[uuid = "b48cb803-c227-4d47-aeb6-e56e0f2d4412"]
+#[derive(Asset, AsBindGroup, TypePath, Debug, Clone)]
 pub struct StatusBarMaterial {
     #[uniform(0)]
     pub foreground_color: Color,
