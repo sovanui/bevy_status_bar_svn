@@ -15,6 +15,6 @@ pub struct StatusBarMaterial {
 
 impl Material for StatusBarMaterial {
     fn fragment_shader() -> ShaderRef {
-        "shaders/percent-bar/material.wgsl".into()
+        "../assets/shaders/bar.wgsl".into()
     }
 }
