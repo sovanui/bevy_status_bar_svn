@@ -1,8 +1,9 @@
 use crate::definition::{Direction, Orientation, StatusBarDefinition};
-use crate::material::StatusBarMaterial;
+use crate::material::{BAR_SHADER_HANDLE, StatusBarMaterial};
 use crate::percentage::AsPercentage;
 use bevy::prelude::*;
 use std::marker::PhantomData;
+use bevy::asset::load_internal_asset;
 
 pub trait PercentageComponent: Component + AsPercentage {}
 impl<T: Component + AsPercentage> PercentageComponent for T {}
@@ -17,6 +18,10 @@ impl<T: PercentageComponent> Default for StatusBarPlugin<T> {
 
 impl<T: PercentageComponent> Plugin for StatusBarPlugin<T> {
     fn build(&self, app: &mut App) {
+
+        load_internal_asset!(app, BAR_SHADER_HANDLE, "../assets/bar.wgsl", Shader::from_wgsl);
+
+
         app.add_systems(PostStartup, spawn::<T>)
             .add_systems(Update, update::<T>)
             .add_systems(PostUpdate, follow_owner::<T>)

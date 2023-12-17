@@ -1,7 +1,11 @@
 use bevy::asset::Asset;
-use bevy::prelude::{Color, Material};
+use bevy::prelude::{Color, Handle, Material, Shader};
 use bevy::reflect::{TypePath};
 use bevy::render::render_resource::{AsBindGroup, ShaderRef};
+
+
+pub(crate) const BAR_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(11079857277321826659);
+
 
 #[derive(Asset, AsBindGroup, TypePath, Debug, Clone)]
 pub struct StatusBarMaterial {
@@ -15,6 +19,6 @@ pub struct StatusBarMaterial {
 
 impl Material for StatusBarMaterial {
     fn fragment_shader() -> ShaderRef {
-        "bar.wgsl".into()
+        BAR_SHADER_HANDLE.into()
     }
 }
