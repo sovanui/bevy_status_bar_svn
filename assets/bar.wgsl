@@ -1,18 +1,25 @@
 #import bevy_pbr::forward_io::VertexOutput
+#import bevy_pbr::forward_io::FragmentOutput
 
-struct CustomMaterial {
+struct StatusBarMaterial {
     foreground_color: vec4<f32>,
     background_color: vec4<f32>,
     percent: f32,
 };
 
-@group(1) @binding(0) var<uniform> material: CustomMaterial;
+
+@group(1) @binding(0) var<uniform> material: StatusBarMaterial;
 
 @fragment
-fn fragment(mesh: VertexOutput) -> @location(0) vec4<f32> {
+fn fragment(mesh: VertexOutput) -> FragmentOutput {
+
+    var out: FragmentOutput;
+
     if (mesh.uv.x <= material.percent) {
-        return material.foreground_color;
+        out.color = material.foreground_color;
     } else {
-        return material.background_color;
+        out.color = material.background_color;
     }
+
+    return out;
 }
