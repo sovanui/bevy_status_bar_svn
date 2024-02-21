@@ -10,7 +10,7 @@ pub struct StatusBarMaterial {
 }
 
 impl Material for StatusBarMaterial {
-    fn fragment_shader() -> ShaderRef { "status-bar.wgsl".into() }
+    fn fragment_shader() -> ShaderRef { "bar.wgsl".into() }
 }
 
 fn main() {
@@ -39,20 +39,20 @@ fn spawn_scene(
     // Add global light
     commands.insert_resource(AmbientLight {
         color: Default::default(),
-        brightness: 1.0,
+        brightness: 1000.0,
     });
 
     // Spawn platform for reference
     commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Plane::from_size(15.0))),
-        material: materials.add(Color::SEA_GREEN.into()),
+        mesh: meshes.add(Plane3d::default().mesh().size(15.0, 15.0)),
+        material: materials.add(Color::SEA_GREEN),
         ..default()
     });
 
 
     // Spawn bar
     commands.spawn(MaterialMeshBundle {
-        mesh: meshes.add(Mesh::from(shape::Quad::new(Vec2::new(5., 1., )))),
+        mesh: meshes.add(Rectangle::new(5., 1., )),
         material: status_bar_materials.add(StatusBarMaterial {
             foreground_color: Color::GREEN,
             background_color: Color::RED,

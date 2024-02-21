@@ -48,7 +48,7 @@ fn spawn<T: PercentageComponent>(
 ) {
     let camera = camera_query.single();
 
-    owner_query.for_each(|(status_bar_definition, percentage_component, entity)| {
+    owner_query.iter().for_each(|(status_bar_definition, percentage_component, entity)| {
         let orientation_rotation = match status_bar_definition.orientation {
             Orientation::FacingCamera => camera.rotation,
         };
@@ -60,10 +60,10 @@ fn spawn<T: PercentageComponent>(
 
         commands.spawn(StatusBarBundle {
             material_mesh_bundle: MaterialMeshBundle {
-                mesh: meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
+                mesh: meshes.add(Rectangle::new(
                     status_bar_definition.size.width(),
                     status_bar_definition.size.height(),
-                )))),
+                )),
                 material: status_bar_materials.add(StatusBarMaterial {
                     foreground_color: status_bar_definition.foreground_color,
                     background_color: status_bar_definition.background_color,
@@ -86,7 +86,7 @@ fn update<T: PercentageComponent>(
     >,
     owner_percentage_component_query: Query<&T>,
 ) {
-    status_bar_query.for_each(|(material_handle, &StatusBarOwner(owner_entity))| {
+    status_bar_query.iter().for_each(|(material_handle, &StatusBarOwner(owner_entity))| {
         let material = status_bar_materials
             .get_mut(material_handle)
             .expect("StatusBarMaterial missing");
@@ -101,7 +101,7 @@ fn follow_owner<T: PercentageComponent>(
     mut bar_query: Query<(&mut Transform, &StatusBarOwner), Without<StatusBarDefinition<T>>>,
     owner_query: Query<(&Transform, &StatusBarDefinition<T>)>,
 ) {
-    bar_query.for_each_mut(|(mut transform, &StatusBarOwner(owner_entity))| {
+    bar_query.iter_mut().for_each(|(mut transform, &StatusBarOwner(owner_entity))| {
         let (owner_transform, owner_bar_definition) =
             owner_query.get(owner_entity).expect("No owner found");
         let new_translation = owner_transform.translation + owner_bar_definition.offset;

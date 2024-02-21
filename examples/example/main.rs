@@ -3,7 +3,6 @@ mod health;
 use crate::health::Health;
 use bevy::prelude::*;
 use bevy_status_bar_svn::{definition::StatusBarDefinition, plugin::StatusBarPlugin};
-use std::f32::consts::PI;
 
 fn main() {
     App::new()
@@ -27,19 +26,16 @@ fn spawn_scene(
 ) {
     // Spawn platform
     commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Plane {
-            size: 40.0,
-            subdivisions: 0,
-        })),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+        mesh: meshes.add(Plane3d::default().mesh().size(40.0, 40.0)),
+        material: materials.add(Color::rgb(0.3, 0.5, 0.3)),
         ..default()
     });
 
     // Spawn player
     commands.spawn(PlayerBundle {
         pbr_bundle: PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6)),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
         },
@@ -59,22 +55,14 @@ fn spawn_scene(
     });
 
     // Add global light
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight {
-            illuminance: 10000.0,
-            ..default()
-        },
-        transform: Transform {
-            translation: Vec3::new(0.0, 2.0, 0.0),
-            rotation: Quat::from_rotation_x(-PI / 4.),
-            ..default()
-        },
-        ..default()
+    commands.insert_resource(AmbientLight {
+        color: Default::default(),
+        brightness: 1000.0,
     });
 }
 
 fn update_health(mut health: Query<&mut Health>) {
-    health.for_each_mut(|mut health| {
+    health.iter_mut().for_each(|mut health| {
         health.add(1);
         if health.get_current() == 100 {
             health.remove(100);

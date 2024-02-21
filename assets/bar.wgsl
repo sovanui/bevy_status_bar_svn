@@ -8,7 +8,7 @@ struct StatusBarMaterial {
 };
 
 
-@group(1) @binding(0) var<uniform> material: StatusBarMaterial;
+@group(2) @binding(0) var<uniform> material: StatusBarMaterial;
 
 @fragment
 fn fragment(mesh: VertexOutput) -> FragmentOutput {
