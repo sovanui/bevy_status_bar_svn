@@ -1,40 +1,37 @@
+mod plugin;
+mod definition;
+mod material;
+
 use bevy::prelude::*;
-use bevy::render::render_resource::{AsBindGroup, ShaderRef};
+use crate::definition::{Size, StatusBarDefinition};
+use crate::plugin::StatusBarPlugin;
 
-
-#[derive(Asset, AsBindGroup, TypePath, Debug, Clone)]
-pub struct StatusBarMaterial {
-    #[uniform(0)] pub foreground_color: Color,
-    #[uniform(0)] pub background_color: Color,
-    #[uniform(0)] pub percent: f32
-}
-
-impl Material for StatusBarMaterial {
-    fn fragment_shader() -> ShaderRef { "bar.wgsl".into() }
-}
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(MaterialPlugin::<StatusBarMaterial>::default())
+        .add_plugins((DefaultPlugins, StatusBarPlugin))
         .add_systems(Startup, spawn_scene)
-        .add_systems(Update, update_bar)
+        .add_systems(Update, move_cube)
         .run();
 }
+
+
+#[derive(Component)]
+struct Cube;
+
 
 fn spawn_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    mut status_bar_materials: ResMut<Assets<StatusBarMaterial>>,
 ) {
-    let camera_translation = Vec3::new(0.0,  20.0, 10.0);
 
     // Spawn Camera
     commands.spawn(Camera3dBundle {
-        transform: Transform::from_translation(camera_translation).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(0.0, 20.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
+
 
     // Add global light
     commands.insert_resource(AmbientLight {
@@ -42,7 +39,8 @@ fn spawn_scene(
         brightness: 1000.0,
     });
 
-    // Spawn platform for reference
+
+    // Spawn platform
     commands.spawn(PbrBundle {
         mesh: meshes.add(Plane3d::default().mesh().size(15.0, 15.0)),
         material: materials.add(Color::SEA_GREEN),
@@ -50,36 +48,51 @@ fn spawn_scene(
     });
 
 
-    // Spawn bar
-    commands.spawn(MaterialMeshBundle {
-        mesh: meshes.add(Rectangle::new(5., 1., )),
-        material: status_bar_materials.add(StatusBarMaterial {
+    // Spawn cube with status bar
+    commands.spawn((
+        PbrBundle {
+            mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
+            material: materials.add(Color::BEIGE),
+            transform: Transform::from_xyz(0.0, 0.5, 0.0),
+            ..default()
+        },
+
+        StatusBarDefinition {
+            size: Size::new(1.5, 0.2),
+            offset: Vec3::new(0.0, 2.0, 0.0),
             foreground_color: Color::GREEN,
             background_color: Color::RED,
-            percent: 0.25,
-        } ),
-        transform: Transform::from_xyz(0.0, 0.5, 0.0).looking_at(-camera_translation, Vec3::Y),
-        ..default()
-    });
+        },
+
+        Cube
+    ));
 
 }
 
-fn update_bar(
-    mut status_bar_materials: ResMut<Assets<StatusBarMaterial>>,
-    status_bar_query: Query<&Handle<StatusBarMaterial>>
+
+fn move_cube(
+    mut cube_query: Query<&mut Transform, With<Cube>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>
 ) {
-    let handle = status_bar_query.single();
-    let material = status_bar_materials
-        .get_mut(handle)
-        .expect("StatusBarMaterial missing");
 
-    if material.percent >= 1.0 {
-        material.percent = 0.0;
-    } else {
-        material.percent += 0.01;
+    let mut cube_transform = cube_query.single_mut();
+
+    if keyboard_input.pressed(KeyCode::ArrowUp) {
+        cube_transform.translation.z -= 0.1;
     }
+
+    if keyboard_input.pressed(KeyCode::ArrowDown) {
+        cube_transform.translation.z += 0.1;
+    }
+
+    if keyboard_input.pressed(KeyCode::ArrowRight) {
+        cube_transform.translation.x += 0.1;
+    }
+
+    if keyboard_input.pressed(KeyCode::ArrowLeft) {
+        cube_transform.translation.x -= 0.1;
+    }
+
 }
-
-
 
 

@@ -43,12 +43,12 @@ fn spawn<T: PercentageComponent>(
     mut meshes: ResMut<Assets<Mesh>>,
     mut status_bar_materials: ResMut<Assets<StatusBarMaterial>>,
 
-    owner_query: Query<(&StatusBarDefinition<T>, &T, Entity)>,
+    owner_query: Query<(&StatusBarDefinition<T>, &T, Entity, &Transform)>,
     camera_query: Query<&Transform, With<Camera3d>>,
 ) {
     let camera = camera_query.single();
 
-    owner_query.iter().for_each(|(status_bar_definition, percentage_component, entity)| {
+    owner_query.iter().for_each(|(status_bar_definition, percentage_component, entity, transform)| {
         let orientation_rotation = match status_bar_definition.orientation {
             Orientation::FacingCamera => camera.rotation,
         };
@@ -69,7 +69,7 @@ fn spawn<T: PercentageComponent>(
                     background_color: status_bar_definition.background_color,
                     percent: percentage_component.percentage().value(),
                 }),
-                transform: Transform::from_translation(status_bar_definition.offset)
+                transform: Transform::from_translation(transform.translation + status_bar_definition.offset)
                     .with_rotation(orientation_rotation * direction_rotation),
                 ..default()
             },
@@ -80,8 +80,10 @@ fn spawn<T: PercentageComponent>(
 
 fn update<T: PercentageComponent>(
     mut status_bar_materials: ResMut<Assets<StatusBarMaterial>>,
-    status_bar_query: Query<
-        (&Handle<StatusBarMaterial>, &StatusBarOwner),
+    status_bar_query: Query<(
+        &Handle<StatusBarMaterial>,
+        &StatusBarOwner
+    ),
         Without<StatusBarDefinition<T>>,
     >,
     owner_percentage_component_query: Query<&T>,
