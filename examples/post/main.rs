@@ -1,6 +1,7 @@
 mod plugin;
 mod definition;
 mod material;
+mod percentage;
 
 use bevy::prelude::*;
 use crate::definition::{Size, StatusBarDefinition};

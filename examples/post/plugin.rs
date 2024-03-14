@@ -1,10 +1,14 @@
 use bevy::prelude::*;
+use crate::percentage::AsPercentage;
 use crate::definition::StatusBarDefinition;
 use crate::material::StatusBarMaterial;
 
-pub struct StatusBarPlugin;
+pub trait PercentageComponent: Component + AsPercentage {}
+impl<T: Component + AsPercentage> PercentageComponent for T {}
 
-impl Plugin for StatusBarPlugin {
+pub struct StatusBarPlugin<T: PercentageComponent>;
+
+impl<T: PercentageComponent> Plugin for StatusBarPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_plugins(MaterialPlugin::<StatusBarMaterial>::default())
             .add_systems(PostStartup, spawn)
