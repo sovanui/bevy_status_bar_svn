@@ -19,13 +19,13 @@ impl<T: PercentageComponent> Default for StatusBarPlugin<T> {
 impl<T: PercentageComponent> Plugin for StatusBarPlugin<T> {
     fn build(&self, app: &mut App) {
 
-        load_internal_asset!(app, BAR_SHADER_HANDLE, "../assets/bar.wgsl", Shader::from_wgsl);
-
+        if !app.is_plugin_added::<MaterialPlugin::<StatusBarMaterial>>() {
+            app.add_plugins(MaterialPlugin::<StatusBarMaterial>::default());
+            load_internal_asset!(app, BAR_SHADER_HANDLE, "../assets/bar.wgsl", Shader::from_wgsl);
+        }
 
         app.add_systems(PostStartup, spawn::<T>)
-            .add_systems(Update, update::<T>)
-            .add_systems(PostUpdate, follow_owner::<T>)
-            .add_plugins(MaterialPlugin::<StatusBarMaterial>::default());
+            .add_systems(PostUpdate, (follow_owner::<T>, update::<T>));
     }
 }
 

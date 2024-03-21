@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_status_bar_svn::percentage::{AsPercentage, Percentage};
+use crate::percentage::{AsPercentage, Percentage};
 
 #[derive(Component, Copy, Clone)]
 pub struct Health {

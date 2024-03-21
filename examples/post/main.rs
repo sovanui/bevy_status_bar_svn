@@ -2,17 +2,19 @@ mod plugin;
 mod definition;
 mod material;
 mod percentage;
+mod health;
 
 use bevy::prelude::*;
-use crate::definition::{Size, StatusBarDefinition};
+use crate::definition::StatusBarDefinition;
+use crate::health::Health;
 use crate::plugin::StatusBarPlugin;
 
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins, StatusBarPlugin))
+        .add_plugins((DefaultPlugins, StatusBarPlugin::<Health>::default()))
         .add_systems(Startup, spawn_scene)
-        .add_systems(Update, move_cube)
+        .add_systems(Update, (move_cube, update_health))
         .run();
 }
 
@@ -58,13 +60,8 @@ fn spawn_scene(
             ..default()
         },
 
-        StatusBarDefinition {
-            size: Size::new(1.5, 0.2),
-            offset: Vec3::new(0.0, 2.0, 0.0),
-            foreground_color: Color::GREEN,
-            background_color: Color::RED,
-        },
-
+        StatusBarDefinition::<Health>::default(),
+        Health::new(100),
         Cube
     ));
 
@@ -94,6 +91,15 @@ fn move_cube(
         cube_transform.translation.x -= 0.1;
     }
 
+}
+
+fn update_health(mut health: Query<&mut Health>) {
+    health.iter_mut().for_each(|mut health| {
+        health.add(1);
+        if health.get_current() == 100 {
+            health.remove(100);
+        }
+    });
 }
 
 

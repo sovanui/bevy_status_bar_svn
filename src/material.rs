@@ -4,7 +4,7 @@ use bevy::reflect::{TypePath};
 use bevy::render::render_resource::{AsBindGroup, ShaderRef};
 
 
-pub(crate) const BAR_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(11079857277321826659);
+pub(crate) const BAR_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(13029956278321423624);
 
 
 #[derive(Asset, AsBindGroup, TypePath, Debug, Clone)]
