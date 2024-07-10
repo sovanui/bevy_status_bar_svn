@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use crate::plugin::PercentageComponent;
-use bevy::prelude::*;
+use bevy::{color::palettes::css::{LIME, RED}, prelude::*};
 
 #[derive(Component)]
 pub struct StatusBarDefinition<T: PercentageComponent> {
@@ -21,8 +21,8 @@ impl<T: PercentageComponent> Default for StatusBarDefinition<T> {
             offset: Vec3::new(0.0, 0.9, -0.7),
             orientation: Orientation::FacingCamera,
             direction: Direction::Horizontal,
-            foreground_color: Color::GREEN,
-            background_color: Color::RED,
+            foreground_color: Color::Srgba(LIME),
+            background_color: Color::Srgba(RED),
             phantom_data: PhantomData,
         }
     }
@@ -42,12 +42,8 @@ impl Size {
         }
     }
 
-    pub fn width(&self) -> f32 {
-        self.width
-    }
-    pub fn height(&self) -> f32 {
-        self.height
-    }
+    pub fn width(&self) -> f32 { self.width }
+    pub fn height(&self) -> f32 { self.height }
 }
 
 #[derive(Default)]

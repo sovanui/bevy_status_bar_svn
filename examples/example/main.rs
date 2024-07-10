@@ -1,7 +1,7 @@
 mod health;
 
 use crate::health::Health;
-use bevy::prelude::*;
+use bevy::{color::palettes::css::{BEIGE, SEA_GREEN}, prelude::*};
 use bevy_status_bar_svn::{definition::StatusBarDefinition, plugin::StatusBarPlugin};
 
 fn main() {
@@ -38,7 +38,7 @@ fn spawn_scene(
     // Spawn platform
     commands.spawn(PbrBundle {
         mesh: meshes.add(Plane3d::default().mesh().size(15.0, 15.0)),
-        material: materials.add(Color::SEA_GREEN),
+        material: materials.add(Color::Srgba(SEA_GREEN)),
         ..default()
     });
 
@@ -47,7 +47,7 @@ fn spawn_scene(
     commands.spawn((
         PbrBundle {
             mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
-            material: materials.add(Color::BEIGE),
+            material: materials.add(Color::Srgba(BEIGE)),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
         },

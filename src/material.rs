@@ -1,5 +1,6 @@
 use bevy::asset::Asset;
-use bevy::prelude::{Color, Handle, Material, Shader};
+use bevy::color::LinearRgba;
+use bevy::prelude::{Handle, Material, Shader};
 use bevy::reflect::{TypePath};
 use bevy::render::render_resource::{AsBindGroup, ShaderRef};
 
@@ -9,8 +10,8 @@ pub(crate) const BAR_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1302
 
 #[derive(Asset, AsBindGroup, TypePath, Debug, Clone)]
 pub struct StatusBarMaterial {
-    #[uniform(0)] pub foreground_color: Color,
-    #[uniform(0)] pub background_color: Color,
+    #[uniform(0)] pub foreground_color: LinearRgba,
+    #[uniform(0)] pub background_color: LinearRgba,
     #[uniform(0)] pub percent: f32,
 }
 

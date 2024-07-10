@@ -65,8 +65,8 @@ fn spawn<T: PercentageComponent>(
                     status_bar_definition.size.height(),
                 )),
                 material: status_bar_materials.add(StatusBarMaterial {
-                    foreground_color: status_bar_definition.foreground_color,
-                    background_color: status_bar_definition.background_color,
+                    foreground_color: status_bar_definition.foreground_color.into(),
+                    background_color: status_bar_definition.background_color.into(),
                     percent: percentage_component.percentage().value(),
                 }),
                 transform: Transform::from_translation(transform.translation + status_bar_definition.offset)
