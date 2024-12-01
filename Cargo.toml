@@ -1,12 +1,12 @@
 [package]
 name = "bevy_status_bar_svn"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = "0.14.0"
+bevy = "0.15.0"
 
 [profile.dev.package."*"]
 opt-level = 3
