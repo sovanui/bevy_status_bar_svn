@@ -47,7 +47,7 @@ fn spawn<T: PercentageComponent>(
     owner_query: Query<(&StatusBarDefinition<T>, &T, Entity, &Transform)>,
     camera_query: Query<&Transform, With<Camera3d>>,
 ) {
-    let camera = camera_query.single();
+    let camera = camera_query.single().unwrap();
 
     owner_query.iter().for_each(
         |(status_bar_definition, percentage_component, entity, transform)| {

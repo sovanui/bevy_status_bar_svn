@@ -33,6 +33,7 @@ fn spawn_scene(
     commands.insert_resource(AmbientLight {
         color: Default::default(),
         brightness: 1000.0,
+        ..Default::default()
     });
 
     // Spawn platform
@@ -65,7 +66,7 @@ fn move_cube(
     mut cube_query: Query<&mut Transform, With<Cube>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
-    let mut cube_transform = cube_query.single_mut();
+    let mut cube_transform = cube_query.single_mut().unwrap();
 
     if keyboard_input.pressed(KeyCode::ArrowUp) {
         cube_transform.translation.z -= 0.1;
